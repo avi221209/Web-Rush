@@ -23,15 +23,20 @@ export const GLOBAL_STORY_NODES: StoryNode[] = buildStoryNodes(GLOBAL_CHAPTERS);
 export const GLOBAL_ANOMALIES: AnomalyDay[] = detectAnomalies(GLOBAL_RECEIPTS);
 export const GLOBAL_RITUALS: RecurringRitual[] = detectRituals(GLOBAL_RECEIPTS);
 
-// Helper metrics
-export function getOverviewMetrics() {
-  const totalTraces = GLOBAL_RECEIPTS.length;
+// Helper metrics — calculates category aggregates & unique location counts
+export function getOverviewMetrics(
+  receipts: LifeReceipt[] = GLOBAL_RECEIPTS,
+  chapters: Chapter[] = GLOBAL_CHAPTERS
+) {
+  const totalTraces = receipts.length;
 
-  const placesCount = new Set(GLOBAL_RECEIPTS.filter(r => r.location?.name).map(r => r.location!.name)).size;
-  const songsCount = GLOBAL_RECEIPTS.filter(r => r.category === 'music').length;
-  const purchasesCount = GLOBAL_RECEIPTS.filter(r => r.category === 'purchase').length;
-  const eventsCount = GLOBAL_RECEIPTS.filter(r => r.category === 'event').length;
-  const chaptersCount = GLOBAL_CHAPTERS.length;
+  const placesCount = new Set(
+    receipts.filter(r => r.location?.name).map(r => r.location!.name)
+  ).size;
+  const songsCount = receipts.filter(r => r.category === 'music').length;
+  const purchasesCount = receipts.filter(r => r.category === 'purchase').length;
+  const eventsCount = receipts.filter(r => r.category === 'event').length;
+  const chaptersCount = chapters.length;
 
   return {
     totalTraces,
@@ -84,11 +89,14 @@ export function filterReceipts(
   return result;
 }
 
-export function searchGlobalGrouped(query: string) {
+export function searchGlobalGrouped(
+  query: string,
+  receipts: LifeReceipt[] = GLOBAL_RECEIPTS
+) {
   if (!query.trim()) return {};
 
   const q = query.toLowerCase().trim();
-  const matched = GLOBAL_RECEIPTS.filter(r => 
+  const matched = receipts.filter(r => 
     r.title.toLowerCase().includes(q) ||
     r.description?.toLowerCase().includes(q) ||
     r.location?.name.toLowerCase().includes(q) ||
@@ -121,8 +129,11 @@ export function searchGlobalGrouped(query: string) {
   return grouped;
 }
 
-export function reconstructDay(dateStr: string): { receipts: LifeReceipt[]; timeGaps: number[]; narrative: string } {
-  const dayReceipts = GLOBAL_RECEIPTS.filter(r => r.timestamp.substring(0, 10) === dateStr)
+export function reconstructDay(
+  dateStr: string,
+  receipts: LifeReceipt[] = GLOBAL_RECEIPTS
+): { receipts: LifeReceipt[]; timeGaps: number[]; narrative: string } {
+  const dayReceipts = receipts.filter(r => r.timestamp.substring(0, 10) === dateStr)
     .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   const timeGaps: number[] = [];

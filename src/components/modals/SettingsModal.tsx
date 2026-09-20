@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { X, Download, RefreshCw, Trash2, Database, ShieldCheck } from 'lucide-react';
 
-import { GLOBAL_RECEIPTS } from '../../engine/receiptEngine';
+import { useArchive } from '../../hooks/useArchive';
+import { useKeyDown } from '../../hooks/useKeyDown';
+import { generateArchiveExport, triggerJSONDownload } from '../../utils/exportUtils';
 
-interface SettingsModalProps {
+export interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onResetSampleData?: () => void;
@@ -13,29 +15,31 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
-  onResetSampleData = () => window.location.reload(),
-  onClearData = () => { GLOBAL_RECEIPTS.length = 0; window.location.reload(); }
+  onResetSampleData,
+  onClearData
 }) => {
+  const { receipts, restoreSampleArchive, clearArchive } = useArchive();
+
   // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useKeyDown('Escape', onClose, isOpen);
 
   if (!isOpen) return null;
 
   const handleExportJSON = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(GLOBAL_RECEIPTS, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `life_receipts_archive_${new Date().toISOString().substring(0, 10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    const jsonStr = generateArchiveExport(receipts);
+    triggerJSONDownload(jsonStr);
+  };
+
+  const handleRestore = () => {
+    restoreSampleArchive();
+    onResetSampleData?.();
+    onClose();
+  };
+
+  const handleClear = () => {
+    clearArchive();
+    onClearData?.();
+    onClose();
   };
 
   return (
@@ -61,7 +65,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <h2 id="settings-modal-title" className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
                 ARCHIVE SETTINGS &amp; DATA MANAGEMENT
               </h2>
-              <p className="text-xs text-[#77736C]">Client-side data controls & export options</p>
+              <p className="text-xs text-[#77736C]">Client-side data controls &amp; export options</p>
             </div>
           </div>
 
@@ -83,7 +87,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <span className="text-[#059669]">Client Memory Mode</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-[#77736C] pt-1">
-              <div>Total Receipts: <strong className="text-[#171717]">{GLOBAL_RECEIPTS.length}</strong></div>
+              <div>Total Receipts: <strong className="text-[#171717]">{receipts.length}</strong></div>
               <div>Categories: <strong className="text-[#171717]">9 Types</strong></div>
             </div>
           </div>
@@ -96,6 +100,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <button
               onClick={handleExportJSON}
+              data-testid="export-json-button"
               className="w-full p-3.5 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors flex items-center justify-between text-xs font-mono font-bold text-[#171717] group"
             >
               <span className="flex items-center space-x-2">
@@ -106,10 +111,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </button>
 
             <button
-              onClick={() => {
-                onResetSampleData();
-                onClose();
-              }}
+              onClick={handleRestore}
               className="w-full p-3.5 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors flex items-center justify-between text-xs font-mono font-bold text-[#171717] group"
             >
               <span className="flex items-center space-x-2">
@@ -120,10 +122,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </button>
 
             <button
-              onClick={() => {
-                onClearData();
-                onClose();
-              }}
+              onClick={handleClear}
               className="w-full p-3.5 rounded-xl border border-[#E11D48]/30 bg-[#E11D48]/5 hover:bg-[#E11D48]/10 transition-colors flex items-center justify-between text-xs font-mono font-bold text-[#E11D48]"
             >
               <span className="flex items-center space-x-2">

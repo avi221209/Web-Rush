@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, ArrowRight } from 'lucide-react';
 
-import { getCategoryInfo } from '../../lib/categoryUtils';
+import { getCategoryInfo } from '../../utils/categoryUtils';
 import { searchGlobalGrouped } from '../../engine/receiptEngine';
+import { useArchive } from '../../hooks/useArchive';
 import type { LifeReceipt } from '../../types/receipt';
 
 interface SearchModalProps {
@@ -16,6 +17,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   onClose,
   onSelectReceipt
 }) => {
+  const { receipts } = useArchive();
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,7 +44,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   if (!isOpen) return null;
 
-  const grouped = searchGlobalGrouped(query);
+  const grouped = searchGlobalGrouped(query, receipts);
   const categoriesFound = Object.keys(grouped);
   const totalResults = categoriesFound.reduce((acc, cat) => acc + grouped[cat].count, 0);
 

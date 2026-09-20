@@ -1,19 +1,21 @@
 import React from 'react';
 import { BookMarked, ArrowRight, MapPin, Layers } from 'lucide-react';
 
-import { getCategoryInfo } from '../../lib/categoryUtils';
-import { GLOBAL_CHAPTERS, GLOBAL_RECEIPTS } from '../../engine/receiptEngine';
+import { getCategoryInfo } from '../../utils/categoryUtils';
+import { useArchive } from '../../hooks/useArchive';
 import type { Chapter, LifeReceipt } from '../../types/receipt';
 
 interface ChaptersViewProps {
-  onSelectReceipt: (receipt: LifeReceipt) => void;
-  onFocusChapterInStory: (chapter: Chapter) => void;
+  onSelectReceipt?: (receipt: LifeReceipt) => void;
+  onFocusChapterInStory?: (chapter: Chapter) => void;
 }
 
 export const ChaptersView: React.FC<ChaptersViewProps> = ({
   onSelectReceipt,
   onFocusChapterInStory
 }) => {
+  const { chapters, receipts } = useArchive();
+
   return (
     <div className="space-y-10 pb-16">
       {/* Header */}
@@ -30,9 +32,9 @@ export const ChaptersView: React.FC<ChaptersViewProps> = ({
 
       {/* Chapters Timeline Stack */}
       <div className="space-y-8 relative before:absolute before:left-4 sm:before:left-8 before:top-4 before:bottom-4 before:w-0.5 before:bg-[#E2DDD3]">
-        {GLOBAL_CHAPTERS.map(chap => {
+        {chapters.map(chap => {
           const representativeReceipts = chap.representativeReceiptIds
-            .map(id => GLOBAL_RECEIPTS.find(r => r.id === id)!)
+            .map(id => receipts.find(r => r.id === id)!)
             .filter(Boolean);
 
           return (
@@ -56,7 +58,7 @@ export const ChaptersView: React.FC<ChaptersViewProps> = ({
                   </div>
 
                   <button
-                    onClick={() => onFocusChapterInStory(chap)}
+                    onClick={() => onFocusChapterInStory?.(chap)}
                     className="self-start sm:self-center px-4 py-2 rounded-xl bg-[#171717] text-[#F7F4EE] hover:bg-[#333] text-xs font-mono font-bold flex items-center space-x-2 transition-all shadow-sm group-hover:scale-105"
                   >
                     <span>Read in Story Mode</span>
@@ -111,8 +113,8 @@ export const ChaptersView: React.FC<ChaptersViewProps> = ({
                       return (
                         <div
                           key={rcpt.id}
-                          onClick={() => onSelectReceipt(rcpt)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt(rcpt); } }}
+                          onClick={() => onSelectReceipt?.(rcpt)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt?.(rcpt); } }}
                           role="button"
                           tabIndex={0}
                           aria-label={`View receipt: ${rcpt.title}`}

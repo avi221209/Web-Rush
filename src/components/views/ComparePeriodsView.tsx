@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { GitCompare, Sparkles, TrendingUp, TrendingDown } from 'lucide-react';
 
-import { CATEGORY_MAP } from '../../lib/categoryUtils';
-import { comparePeriods, GLOBAL_RECEIPTS } from '../../engine/receiptEngine';
+import { CATEGORY_MAP } from '../../utils/categoryUtils';
+import { comparePeriods } from '../../engine/receiptEngine';
+import { useArchive } from '../../hooks/useArchive';
 import type { ReceiptCategory } from '../../types/receipt';
 
 export const ComparePeriodsView: React.FC = () => {
+  const { receipts } = useArchive();
   const [periodARange, setPeriodARange] = useState({ start: '2026-03-01', end: '2026-04-30', label: 'March–April (Early Phase)' });
   const [periodBRange, setPeriodBRange] = useState({ start: '2026-07-01', end: '2026-08-31', label: 'July–August (Synthesis Phase)' });
 
   const result = comparePeriods(
-    GLOBAL_RECEIPTS,
+    receipts,
     periodARange.start,
     periodARange.end,
     periodBRange.start,

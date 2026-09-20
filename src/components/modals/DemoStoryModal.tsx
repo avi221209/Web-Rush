@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, ArrowRight, ArrowLeft, Play, Sparkles, CheckCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-import { GLOBAL_CHAPTERS, GLOBAL_MOMENTS, GLOBAL_PATTERNS, GLOBAL_RECEIPTS } from '../../engine/receiptEngine';
+import { useArchive } from '../../hooks/useArchive';
+import { useKeyDown } from '../../hooks/useKeyDown';
 
 interface DemoStoryModalProps {
   isOpen: boolean;
@@ -15,24 +16,18 @@ export const DemoStoryModal: React.FC<DemoStoryModalProps> = ({
   onClose,
   onNavigateToTab
 }) => {
+  const { receipts, moments, patterns, chapters } = useArchive();
   const [step, setStep] = useState(1);
 
   // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useKeyDown('Escape', onClose, isOpen);
 
   if (!isOpen) return null;
 
-  const sampleReceipt = GLOBAL_RECEIPTS.find(r => r.id === 'rcpt-053') || GLOBAL_RECEIPTS[0]; // Max Richter / Izumi ramen
-  const sampleMoment = GLOBAL_MOMENTS[0];
-  const samplePattern = GLOBAL_PATTERNS[0];
-  const sampleChapter = GLOBAL_CHAPTERS[0];
+  const sampleReceipt = receipts.find(r => r.id === 'rcpt-053') || receipts[0] || { title: 'Digital Trace' };
+  const sampleMoment = moments[0];
+  const samplePattern = patterns[0];
+  const sampleChapter = chapters[0];
 
   const steps = [
     {

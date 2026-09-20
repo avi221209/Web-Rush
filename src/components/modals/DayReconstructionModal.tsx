@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { X, Calendar, Clock, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 
-import { getCategoryInfo } from '../../lib/categoryUtils';
+import { getCategoryInfo } from '../../utils/categoryUtils';
 import { reconstructDay } from '../../engine/receiptEngine';
+import { useArchive } from '../../hooks/useArchive';
+import { useKeyDown } from '../../hooks/useKeyDown';
 import type { LifeReceipt } from '../../types/receipt';
 
 interface DayReconstructionModalProps {
@@ -16,19 +18,14 @@ export const DayReconstructionModal: React.FC<DayReconstructionModalProps> = ({
   onClose,
   onSelectReceipt
 }) => {
+  const { receipts: archiveReceipts } = useArchive();
+
   // Close on Escape
-  useEffect(() => {
-    if (!dateStr) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [dateStr, onClose]);
+  useKeyDown('Escape', onClose, Boolean(dateStr));
 
   if (!dateStr) return null;
 
-  const { receipts, timeGaps, narrative } = reconstructDay(dateStr);
+  const { receipts, timeGaps, narrative } = reconstructDay(dateStr, archiveReceipts);
   if (receipts.length === 0) return null;
 
   const firstDate = new Date(receipts[0].timestamp);
