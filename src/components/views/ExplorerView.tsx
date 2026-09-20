@@ -7,9 +7,10 @@ import type { LifeReceipt, ReceiptCategory } from '../../types/receipt';
 
 interface ExplorerViewProps {
   onSelectReceipt: (receipt: LifeReceipt) => void;
+  onResetSampleData?: () => void;
 }
 
-export const ExplorerView: React.FC<ExplorerViewProps> = ({ onSelectReceipt }) => {
+export const ExplorerView: React.FC<ExplorerViewProps> = ({ onSelectReceipt, onResetSampleData }) => {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ReceiptCategory | 'all'>('all');
   const [selectedTag, setSelectedTag] = useState<string | 'all'>('all');
@@ -175,7 +176,22 @@ export const ExplorerView: React.FC<ExplorerViewProps> = ({ onSelectReceipt }) =
       </div>
 
       {/* Grid or List View */}
-      {filtered.length === 0 ? (
+      {GLOBAL_RECEIPTS.length === 0 ? (
+        <div className="p-12 text-center bg-[#EFEAE0]/40 rounded-2xl border border-[#E2DDD3] space-y-4">
+          <p className="font-serif italic text-xl text-[#171717]">The archive is currently empty.</p>
+          <p className="text-xs text-[#77736C] max-w-md mx-auto font-sans">
+            No digital receipts or traces are currently stored in memory. You can reload the organizer sample archive (200+ receipts) at any time.
+          </p>
+          {onResetSampleData && (
+            <button
+              onClick={onResetSampleData}
+              className="px-5 py-2.5 rounded-xl bg-[#171717] text-[#F7F4EE] hover:bg-[#333] text-xs font-mono font-bold transition-all shadow-sm"
+            >
+              Load Sample Archive (200+ Traces)
+            </button>
+          )}
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="p-12 text-center bg-[#EFEAE0]/40 rounded-2xl border border-[#E2DDD3] space-y-2">
           <p className="font-serif italic text-lg text-[#171717]">No digital traces found matching criteria.</p>
           <p className="text-xs text-[#77736C]">Try clearing search inputs or changing category filters.</p>

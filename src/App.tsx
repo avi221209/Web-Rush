@@ -13,11 +13,13 @@ import { PatternsView } from './components/views/PatternsView';
 import { ChaptersView } from './components/views/ChaptersView';
 import { StoryView } from './components/views/StoryView';
 import { ComparePeriodsView } from './components/views/ComparePeriodsView';
+import { AboutView } from './components/views/AboutView';
 
 import { ReceiptDetailDrawer } from './components/modals/ReceiptDetailDrawer';
 import { ThreadJourneyModal } from './components/modals/ThreadJourneyModal';
 import { DemoStoryModal } from './components/modals/DemoStoryModal';
 import { DayReconstructionModal } from './components/modals/DayReconstructionModal';
+import { SettingsModal } from './components/modals/SettingsModal';
 
 import type { Chapter, LifeReceipt } from './types/receipt';
 
@@ -31,6 +33,7 @@ export function App() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDemoTourOpen, setIsDemoTourOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [focusedChapterId, setFocusedChapterId] = useState<string | undefined>(undefined);
 
   const handleFocusChapterInStory = (chapter: Chapter) => {
@@ -50,6 +53,7 @@ export function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onReopenIntro={() => setHasEnteredIntro(false)}
       />
 
@@ -66,7 +70,10 @@ export function App() {
         )}
 
         {activeTab === 'receipts' && (
-          <ExplorerView onSelectReceipt={setSelectedReceipt} />
+          <ExplorerView
+            onSelectReceipt={setSelectedReceipt}
+            onResetSampleData={() => window.location.reload()}
+          />
         )}
 
         {activeTab === 'connections' && (
@@ -99,6 +106,14 @@ export function App() {
             initialChapterId={focusedChapterId}
             onSelectReceipt={setSelectedReceipt}
             onFollowThread={setThreadReceipt}
+          />
+        )}
+
+        {activeTab === 'about' && (
+          <AboutView
+            onNavigateTab={setActiveTab}
+            onExploreArchive={() => setActiveTab('receipts')}
+            onOpenSettings={() => setIsSettingsOpen(true)}
           />
         )}
       </main>
@@ -137,6 +152,11 @@ export function App() {
         isOpen={isDemoTourOpen}
         onClose={() => setIsDemoTourOpen(false)}
         onNavigateToTab={setActiveTab}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );
