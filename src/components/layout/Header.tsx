@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Compass, Layers, BookMarked, ScrollText, ChevronDown, GitFork, Sparkles, GitCompare, Film, Settings, Info } from 'lucide-react';
+import { Logo } from '../brand/Logo';
 
 export type ActiveTab = 'overview' | 'receipts' | 'connections' | 'patterns' | 'compare' | 'chapters' | 'story' | 'about';
 
@@ -53,19 +54,13 @@ export const Header: React.FC<HeaderProps> = ({
       <header className="sticky top-0 z-40 bg-[#F7F4EE]/90 backdrop-blur-md border-b border-[#E2DDD3] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Brand Logo */}
+            {/* Brand Custom Logo */}
             <div className="flex items-center space-x-3">
-              <button
+              <Logo
+                variant="full"
+                size="md"
                 onClick={() => setActiveTab('overview')}
-                className="flex items-center space-x-2 text-left group focus:outline-none"
-              >
-                <div className="w-8 h-8 rounded bg-[#171717] text-[#F7F4EE] flex items-center justify-center font-mono font-bold text-xs tracking-tighter shadow-sm group-hover:bg-[#333] transition-colors">
-                  L//R
-                </div>
-                <span className="font-mono text-sm tracking-wider font-extrabold text-[#171717]">
-                  LIFE//RECEIPTS
-                </span>
-              </button>
+              />
             </div>
 
             {/* Collapsed Primary Desktop Nav */}

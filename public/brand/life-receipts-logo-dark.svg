@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 36" fill="none">
+  <!-- Receipt Icon Mark (Cream Paper Fill) -->
+  <g transform="translate(0, 0)">
+    <path 
+      d="M 7 3 C 5.895 3 5 3.895 5 5 L 5 29.5 L 8 27 L 11 29.5 L 14 27 L 17 29.5 L 20 27 L 23 29.5 L 26 27 L 27 28 L 27 5 C 27 3.895 26.105 3 25 3 Z" 
+      fill="#F7F4EE"
+    />
+    <line x1="9.5" y1="11" x2="16.5" y2="11" stroke="#A87532" stroke-width="1.75" stroke-linecap="round" />
+    <line x1="9.5" y1="16" x2="22.5" y2="16" stroke="#171717" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round" />
+    <line x1="9.5" y1="21" x2="18.5" y2="21" stroke="#171717" stroke-opacity="0.25" stroke-width="1.5" stroke-linecap="round" />
+    <path 
+      d="M 22 2 C 22 4.5, 24.5 7, 27 7 C 24.5 7, 22 9.5, 22 12 C 22 9.5, 19.5 7, 17 7 C 19.5 7, 22 4.5, 22 2 Z" 
+      fill="#A87532" 
+    />
+  </g>
+
+  <!-- Editorial Wordmark (Paper Cream #F7F4EE) -->
+  <text x="36" y="23" fill="#F7F4EE" font-family="Newsreader, Georgia, serif" font-size="20" font-weight="700" letter-spacing="1">LIFE</text>
+  <text x="82" y="23" fill="#A87532" font-family="'JetBrains Mono', monospace" font-size="18" font-weight="700">//</text>
+  <text x="101" y="23" fill="#F7F4EE" font-family="Newsreader, Georgia, serif" font-size="20" font-weight="700" letter-spacing="1">RECEIPTS</text>
+</svg>

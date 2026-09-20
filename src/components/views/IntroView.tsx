@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { Logo } from '../brand/Logo';
 
 interface IntroViewProps {
   onEnterApp: () => void;
@@ -10,13 +11,8 @@ export const IntroView: React.FC<IntroViewProps> = ({ onEnterApp }) => {
     <div className="min-h-screen bg-[#F7F4EE] text-[#171717] flex flex-col justify-between p-6 sm:p-12 selection:bg-[#171717] selection:text-[#F7F4EE]">
       {/* Top Header */}
       <div className="flex items-center justify-between max-w-5xl mx-auto w-full">
-        <div className="flex items-center space-x-2 font-mono text-xs font-bold tracking-widest text-[#171717]">
-          <div className="w-6 h-6 rounded bg-[#171717] text-[#F7F4EE] flex items-center justify-center text-[10px]">
-            L//R
-          </div>
-          <span>LIFE//RECEIPTS</span>
-        </div>
-        <span className="text-xs font-mono text-[#77736C] bg-[#EFEAE0] px-2.5 py-1 rounded-full border border-[#E2DDD3]">
+        <Logo variant="full" size="md" showTagline />
+        <span className="text-xs font-mono text-[#77736C] bg-[#EFEAE0] px-3 py-1 rounded-full border border-[#E2DDD3]">
           WebRush Hackathon Submission
         </span>
       </div>
