@@ -21,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [analyzeOpen, setAnalyzeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const analyzeButtonRef = useRef<HTMLButtonElement>(null);
 
   const primaryNavItems: { id: ActiveTab; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'overview', label: 'Overview', icon: Compass },
@@ -48,6 +49,18 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Close dropdown on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && analyzeOpen) {
+        setAnalyzeOpen(false);
+        analyzeButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [analyzeOpen]);
+
   return (
     <>
       {/* Top Fixed Desktop & Tablet Navigation */}
@@ -64,7 +77,10 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Collapsed Primary Desktop Nav */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav
+              className="hidden md:flex items-center space-x-1"
+              aria-label="Primary navigation"
+            >
               {primaryNavItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -72,13 +88,14 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                       isActive
                         ? 'bg-[#171717] text-[#F7F4EE] shadow-sm'
                         : 'text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -87,26 +104,35 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Single "Analyze" Dropdown Menu */}
               <div className="relative" ref={dropdownRef}>
                 <button
+                  ref={analyzeButtonRef}
                   onClick={() => setAnalyzeOpen(!analyzeOpen)}
+                  aria-expanded={analyzeOpen}
+                  aria-haspopup="true"
+                  aria-label="Analyze tools menu"
                   className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                     isAnalyzeActive
                       ? 'bg-[#171717] text-[#F7F4EE] shadow-sm'
                       : 'text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Analyze</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${analyzeOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3 h-3 transition-transform ${analyzeOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
 
                 {analyzeOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl shadow-xl p-1 z-50 animate-in fade-in duration-150">
+                  <div
+                    role="menu"
+                    aria-label="Analyze submenu"
+                    className="absolute top-full left-0 mt-1 w-48 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl shadow-xl p-1 z-50 animate-in fade-in duration-150"
+                  >
                     {analyzeItems.map(subItem => {
                       const SubIcon = subItem.icon;
                       const isSubActive = activeTab === subItem.id;
                       return (
                         <button
                           key={subItem.id}
+                          role="menuitem"
                           onClick={() => {
                             setActiveTab(subItem.id);
                             setAnalyzeOpen(false);
@@ -117,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
                               : 'text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]'
                           }`}
                         >
-                          <SubIcon className="w-3.5 h-3.5" />
+                          <SubIcon className="w-3.5 h-3.5" aria-hidden="true" />
                           <span>{subItem.label}</span>
                         </button>
                       );
@@ -133,13 +159,13 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={onOpenSearch}
                 className="flex items-center space-x-2 px-2.5 py-1.5 rounded-md border border-[#E2DDD3]/60 bg-[#EFEAE0]/30 hover:bg-[#EFEAE0] text-xs text-[#77736C] transition-all w-32 sm:w-44 justify-between"
-                title="Search digital traces (Press /)"
+                aria-label="Open search (Press /)"
               >
                 <div className="flex items-center space-x-1.5 truncate">
-                  <Search className="w-3.5 h-3.5 text-[#77736C]" />
+                  <Search className="w-3.5 h-3.5 text-[#77736C]" aria-hidden="true" />
                   <span className="hidden sm:inline font-sans truncate text-[11px]">Search...</span>
                 </div>
-                <kbd className="hidden sm:inline-block px-1 py-0.2 text-[9px] font-mono bg-[#F7F4EE] text-[#77736C] rounded border border-[#E2DDD3]/80">
+                <kbd className="hidden sm:inline-block px-1 py-0.2 text-[9px] font-mono bg-[#F7F4EE] text-[#77736C] rounded border border-[#E2DDD3]/80" aria-hidden="true">
                   /
                 </kbd>
               </button>
@@ -147,32 +173,33 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Informative "About" Page Button */}
               <button
                 onClick={() => setActiveTab('about')}
+                aria-label="About LIFE//RECEIPTS"
+                aria-current={activeTab === 'about' ? 'page' : undefined}
                 className={`p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0] transition-colors ${
                   activeTab === 'about' ? 'bg-[#EFEAE0] text-[#171717]' : ''
                 }`}
-                title="About the Archive & Privacy"
               >
-                <Info className="w-4 h-4" />
+                <Info className="w-4 h-4" aria-hidden="true" />
               </button>
 
               {/* Icon-Only "Intro film" Button */}
               {onReopenIntro && (
                 <button
                   onClick={onReopenIntro}
+                  aria-label="Replay intro film"
                   className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0] transition-colors"
-                  title="Replay intro film"
                 >
-                  <Film className="w-4 h-4" />
+                  <Film className="w-4 h-4" aria-hidden="true" />
                 </button>
               )}
 
               {/* Settings Icon Button */}
               <button
                 onClick={onOpenSettings}
+                aria-label="Archive settings and data management"
                 className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0] transition-colors"
-                title="Archive settings & data management"
               >
-                <Settings className="w-4 h-4" />
+                <Settings className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -180,7 +207,10 @@ export const Header: React.FC<HeaderProps> = ({
       </header>
 
       {/* MOBILE BOTTOM NAVIGATION BAR */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F7F4EE]/95 backdrop-blur-md border-t border-[#E2DDD3] px-2 py-1.5 flex items-center justify-around shadow-lg">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F7F4EE]/95 backdrop-blur-md border-t border-[#E2DDD3] px-2 py-1.5 flex items-center justify-around shadow-lg"
+        aria-label="Mobile navigation"
+      >
         {[
           { id: 'overview' as ActiveTab, label: 'Overview', icon: Compass },
           { id: 'receipts' as ActiveTab, label: 'Receipts', icon: Layers },
@@ -194,6 +224,8 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={item.label}
               className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-mono transition-colors ${
                 isActive
                   ? 'text-[#171717] font-bold'
@@ -201,9 +233,9 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <div className={`p-1 rounded-md ${isActive ? 'bg-[#171717] text-[#F7F4EE]' : ''}`}>
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
               </div>
-              <span className="mt-0.5">{item.label}</span>
+              <span className="mt-0.5" aria-hidden="true">{item.label}</span>
             </button>
           );
         })}

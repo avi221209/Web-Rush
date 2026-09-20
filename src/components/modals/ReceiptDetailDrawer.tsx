@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, MapPin, Calendar, Tag, ArrowRight, GitFork, Sparkles, Clock, User, Link, ShieldCheck } from 'lucide-react';
 
 import { getCategoryInfo } from '../../lib/categoryUtils';
@@ -20,6 +20,16 @@ export const ReceiptDetailDrawer: React.FC<ReceiptDetailDrawerProps> = ({
   onFollowThread,
   onReconstructDay
 }) => {
+  // Close on Escape key
+  useEffect(() => {
+    if (!receipt) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [receipt, onClose]);
+
   if (!receipt) return null;
 
   const categoryInfo = getCategoryInfo(receipt.category);
@@ -53,8 +63,15 @@ export const ReceiptDetailDrawer: React.FC<ReceiptDetailDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-[#171717]/40 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-hidden bg-[#171717]/40 backdrop-blur-sm flex justify-end animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="receipt-drawer-title"
         className="w-full max-w-xl bg-[#F7F4EE] border-l border-[#E2DDD3] shadow-2xl h-full flex flex-col overflow-hidden animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}
       >
@@ -72,9 +89,10 @@ export const ReceiptDetailDrawer: React.FC<ReceiptDetailDrawerProps> = ({
 
           <button
             onClick={onClose}
+            aria-label="Close receipt details"
             className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0] transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -82,7 +100,7 @@ export const ReceiptDetailDrawer: React.FC<ReceiptDetailDrawerProps> = ({
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Main Title & Description */}
           <div className="space-y-3">
-            <h2 className="font-serif text-2xl font-bold text-[#171717] leading-tight">
+            <h2 id="receipt-drawer-title" className="font-serif text-2xl font-bold text-[#171717] leading-tight">
               {receipt.title}
             </h2>
             {receipt.description && (
@@ -205,6 +223,10 @@ export const ReceiptDetailDrawer: React.FC<ReceiptDetailDrawerProps> = ({
                     <div
                       key={connReceipt.id}
                       onClick={() => onSelectReceipt(connReceipt)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt(connReceipt); } }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`View receipt: ${connReceipt.title}`}
                       className="p-4 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors cursor-pointer group space-y-3 shadow-sm"
                     >
                       <div className="flex items-center justify-between">

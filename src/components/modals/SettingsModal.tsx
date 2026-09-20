@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Download, RefreshCw, Trash2, Database, ShieldCheck } from 'lucide-react';
 
 import { GLOBAL_RECEIPTS } from '../../engine/receiptEngine';
@@ -16,6 +16,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onResetSampleData = () => window.location.reload(),
   onClearData = () => { GLOBAL_RECEIPTS.length = 0; window.location.reload(); }
 }) => {
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleExportJSON = () => {
@@ -29,8 +39,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
         className="w-full max-w-xl bg-[#F7F4EE] border border-[#E2DDD3] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={e => e.stopPropagation()}
       >
@@ -41,18 +58,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Database className="w-4 h-4 text-[#F7F4EE]" />
             </div>
             <div>
-              <h3 className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
-                ARCHIVE SETTINGS & DATA MANAGEMENT
-              </h3>
+              <h2 id="settings-modal-title" className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
+                ARCHIVE SETTINGS &amp; DATA MANAGEMENT
+              </h2>
               <p className="text-xs text-[#77736C]">Client-side data controls & export options</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
+            aria-label="Close settings"
             className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 

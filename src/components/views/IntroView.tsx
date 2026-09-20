@@ -46,7 +46,7 @@ export const IntroView: React.FC<IntroViewProps> = ({ onEnterApp }) => {
         <div className="pt-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <button
             onClick={onEnterApp}
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-[#171717] text-[#F7F4EE] hover:bg-[#333] font-mono text-sm font-bold tracking-wider flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transition-all group focus:outline-none"
+            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-[#171717] text-[#F7F4EE] hover:bg-[#333] font-mono text-sm font-bold tracking-wider flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transition-all group"
           >
             <span>EXPLORE THIS LIFE</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

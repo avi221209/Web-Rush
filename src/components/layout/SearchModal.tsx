@@ -47,25 +47,35 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const totalResults = categoriesFound.reduce((acc, cat) => acc + grouped[cat].count, 0);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/40 backdrop-blur-sm flex items-start justify-center p-4 sm:p-6 pt-16 sm:pt-24 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/40 backdrop-blur-sm flex items-start justify-center p-4 sm:p-6 pt-16 sm:pt-24 animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="search-modal-title"
         className="w-full max-w-2xl bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Search Header */}
         <div className="p-4 border-b border-[#E2DDD3] flex items-center space-x-3 bg-[#EFEAE0]/50">
           <Search className="w-5 h-5 text-[#77736C]" />
+          <h2 id="search-modal-title" className="sr-only">Search digital traces</h2>
           <input
             ref={inputRef}
-            type="text"
+            type="search"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search titles, places, artists, tags, notes... (e.g. 'Mumbai', 'Radiohead', 'Coffee')"
-            className="w-full bg-transparent text-sm text-[#171717] placeholder-[#77736C] focus:outline-none font-sans"
+            placeholder="Search titles, places, artists, tags, notes..."
+            aria-label="Search receipts"
+            className="w-full bg-transparent text-sm text-[#171717] placeholder-[#77736C] focus:outline-none focus-visible:ring-0 font-sans"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
+              aria-label="Clear search query"
               className="p-1 rounded text-[#77736C] hover:text-[#171717]"
             >
               <X className="w-4 h-4" />
@@ -73,6 +83,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           )}
           <button
             onClick={onClose}
+            aria-label="Close search"
             className="px-2 py-1 text-xs font-mono text-[#77736C] bg-[#F7F4EE] rounded border border-[#E2DDD3] hover:text-[#171717]"
           >
             ESC

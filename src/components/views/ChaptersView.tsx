@@ -112,6 +112,10 @@ export const ChaptersView: React.FC<ChaptersViewProps> = ({
                         <div
                           key={rcpt.id}
                           onClick={() => onSelectReceipt(rcpt)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt(rcpt); } }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`View receipt: ${rcpt.title}`}
                           className="p-3 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors cursor-pointer space-y-1.5 group"
                         >
                           <div className="flex items-center justify-between">

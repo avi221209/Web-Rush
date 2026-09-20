@@ -49,7 +49,7 @@ export const ComparePeriodsView: React.FC = () => {
                 const [start, end, label] = e.target.value.split('|');
                 setPeriodARange({ start, end, label });
               }}
-              className="w-full p-2.5 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl text-[#171717] font-semibold focus:outline-none"
+              className="w-full p-2.5 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl text-[#171717] font-semibold focus:outline-none focus:ring-2 focus:ring-[#171717]"
             >
               <option value="2026-03-01|2026-04-30|March–April (Early Phase)">March–April 2026 (Early Academic Phase)</option>
               <option value="2026-05-01|2026-05-31|May 2026 (Summer Retreat)">May 2026 (Summer Retreat)</option>
@@ -65,7 +65,7 @@ export const ComparePeriodsView: React.FC = () => {
                 const [start, end, label] = e.target.value.split('|');
                 setPeriodBRange({ start, end, label });
               }}
-              className="w-full p-2.5 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl text-[#171717] font-semibold focus:outline-none"
+              className="w-full p-2.5 bg-[#F7F4EE] border border-[#E2DDD3] rounded-xl text-[#171717] font-semibold focus:outline-none focus:ring-2 focus:ring-[#171717]"
             >
               <option value="2026-07-01|2026-08-31|July–August (Synthesis Phase)">July–August 2026 (Synthesis Phase)</option>
               <option value="2026-06-01|2026-06-30|June 2026 (Studio Build)">June 2026 (Studio Build)</option>

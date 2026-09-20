@@ -187,6 +187,10 @@ export const PatternsView: React.FC<PatternsViewProps> = ({
                         <div
                           key={i}
                           onClick={() => onReconstructDay(occ.dateStr)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onReconstructDay(occ.dateStr); } }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Reconstruct day: ${occ.displayDate}`}
                           className="p-3.5 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors cursor-pointer flex items-center justify-between font-mono text-xs group"
                         >
                           <span className="font-bold text-[#171717] flex items-center space-x-1.5">
@@ -308,6 +312,10 @@ export const PatternsView: React.FC<PatternsViewProps> = ({
                             <div
                               key={rcpt.id}
                               onClick={() => onSelectReceipt(rcpt)}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt(rcpt); } }}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={`View receipt: ${rcpt.title}`}
                               className="p-3.5 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-colors cursor-pointer space-y-2 group shadow-sm"
                             >
                               <div className="flex items-center justify-between">

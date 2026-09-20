@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, ArrowLeft, CheckCircle2, GitCommit, Sparkles } from 'lucide-react';
 
 import { getCategoryInfo } from '../../lib/categoryUtils';
@@ -17,6 +17,16 @@ export const ThreadJourneyModal: React.FC<ThreadJourneyModalProps> = ({
   onSelectReceipt
 }) => {
   if (!initialReceipt) return null;
+
+  // Close on Escape
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   // Build a 5-step narrative chain starting from initialReceipt
   const chain: { receipt: LifeReceipt; reason: string }[] = [];
@@ -63,8 +73,15 @@ export const ThreadJourneyModal: React.FC<ThreadJourneyModalProps> = ({
   const ActiveIcon = activeCategory.icon;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="thread-modal-title"
         className="w-full max-w-3xl bg-[#F7F4EE] border border-[#E2DDD3] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
@@ -75,9 +92,9 @@ export const ThreadJourneyModal: React.FC<ThreadJourneyModalProps> = ({
               <Sparkles className="w-4 h-4 text-[#F7F4EE]" />
             </div>
             <div>
-              <h3 className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
+              <h2 id="thread-modal-title" className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
                 FOLLOW THE THREAD
-              </h3>
+              </h2>
               <p className="text-xs text-[#77736C]">
                 Step {activeIndex + 1} of {chain.length} &bull; Interactive narrative trace journey
               </p>
@@ -86,9 +103,10 @@ export const ThreadJourneyModal: React.FC<ThreadJourneyModalProps> = ({
 
           <button
             onClick={onClose}
+            aria-label="Close thread journey"
             className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -108,7 +126,9 @@ export const ThreadJourneyModal: React.FC<ThreadJourneyModalProps> = ({
                 <button
                   key={step.receipt.id}
                   onClick={() => setActiveIndex(idx)}
-                  className={`relative z-10 flex flex-col items-center group focus:outline-none`}
+                  aria-label={`Step ${idx + 1}: ${step.receipt.title}`}
+                  aria-current={isCurrent ? 'step' : undefined}
+                  className={`relative z-10 flex flex-col items-center group`}
                 >
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${

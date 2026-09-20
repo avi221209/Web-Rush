@@ -48,6 +48,11 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-[#F7F4EE] text-[#171717] flex flex-col justify-between selection:bg-[#171717] selection:text-[#F7F4EE]">
+      {/* Skip Navigation for keyboard users */}
+      <a href="#main-content" className="skip-nav">
+        Skip to main content
+      </a>
+
       {/* Top Fixed Header & Mobile Bottom Nav */}
       <Header
         activeTab={activeTab}
@@ -58,7 +63,7 @@ export function App() {
       />
 
       {/* Main View Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full">
         {activeTab === 'overview' && (
           <OverviewView
             onSelectReceipt={setSelectedReceipt}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, ArrowLeft, Play, Sparkles, CheckCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -16,6 +16,16 @@ export const DemoStoryModal: React.FC<DemoStoryModalProps> = ({
   onNavigateToTab
 }) => {
   const [step, setStep] = useState(1);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -99,8 +109,15 @@ export const DemoStoryModal: React.FC<DemoStoryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="demo-modal-title"
         className="w-full max-w-2xl bg-[#F7F4EE] border border-[#E2DDD3] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={e => e.stopPropagation()}
       >
@@ -111,18 +128,19 @@ export const DemoStoryModal: React.FC<DemoStoryModalProps> = ({
               <Play className="w-4 h-4 text-[#F7F4EE]" />
             </div>
             <div>
-              <h3 className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
+              <h2 id="demo-modal-title" className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
                 JUDGING DEMO TOUR: SHOW ME A STORY
-              </h3>
+              </h2>
               <p className="text-xs text-[#77736C]">Step {step} of {steps.length} &bull; The Core Product Transformation</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
+            aria-label="Close demo tour"
             className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Calendar, Clock, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 
 import { getCategoryInfo } from '../../lib/categoryUtils';
@@ -16,6 +16,16 @@ export const DayReconstructionModal: React.FC<DayReconstructionModalProps> = ({
   onClose,
   onSelectReceipt
 }) => {
+  // Close on Escape
+  useEffect(() => {
+    if (!dateStr) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [dateStr, onClose]);
+
   if (!dateStr) return null;
 
   const { receipts, timeGaps, narrative } = reconstructDay(dateStr);
@@ -30,8 +40,15 @@ export const DayReconstructionModal: React.FC<DayReconstructionModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#171717]/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+      role="presentation"
+      onClick={onClose}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="day-modal-title"
         className="w-full max-w-2xl bg-[#F7F4EE] border border-[#E2DDD3] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
@@ -42,18 +59,19 @@ export const DayReconstructionModal: React.FC<DayReconstructionModalProps> = ({
               <Calendar className="w-4 h-4 text-[#F7F4EE]" />
             </div>
             <div>
-              <h3 className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
+              <h2 id="day-modal-title" className="font-mono text-xs font-bold text-[#171717] uppercase tracking-wider">
                 DAY RECONSTRUCTION VIEW
-              </h3>
+              </h2>
               <p className="text-xs text-[#77736C]">{displayDate} &bull; {receipts.length} traces</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
+            aria-label="Close day reconstruction"
             className="p-1.5 rounded-md text-[#77736C] hover:text-[#171717] hover:bg-[#EFEAE0]"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -84,6 +102,10 @@ export const DayReconstructionModal: React.FC<DayReconstructionModalProps> = ({
                     onSelectReceipt(rcpt);
                     onClose();
                   }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectReceipt(rcpt); onClose(); } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View receipt: ${rcpt.title}`}
                   className="p-4 rounded-xl border border-[#E2DDD3] bg-[#F7F4EE] hover:bg-[#EFEAE0] transition-all cursor-pointer flex items-start justify-between space-x-4 group shadow-sm"
                 >
                   <div className="flex items-start space-x-3 min-w-0">
